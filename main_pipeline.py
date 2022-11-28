@@ -32,21 +32,19 @@ all_ops = np.array(sorted(in_ops + out_ops)) # combine into single model
 model = all_ops
 
 # SAVE GRAPH PROPERTIES
-np.savetxt(f'./graphs/HG{gn}_k{k_avg}_mu{mu:.2f}_({n},{nc},{npc})_degrees.dat', deg_dist, fmt='%s')
-np.savetxt(f'./graphs/HG{gn}_k{k_avg}_mu{mu:.2f}_({n},{nc},{npc})_interactions.dat', all_ops, fmt='%s')
+g_id = str(0).zfill(2) # specify identifier (if generating multiple graphs)
+np.savetxt(f'./graphs/HG{g_id}_k{k_avg}_mu{mu:.2f}_({n},{nc},{npc})_degrees.dat', deg_dist, fmt='%s')
+np.savetxt(f'./graphs/HG{g_id}_k{k_avg}_mu{mu:.2f}_({n},{nc},{npc})_interactions.dat', all_ops, fmt='%s')
 
-
-pars = [beta for _ in range(len(model))]
-
+# CONVERT INTERACTIONS TO METROPOLIS-READABLE FILE
+pars = [beta for _ in range(len(model))] # initialize parameters
 interactions = np.zeros((len(model),2))
 interactions[:,0] = model
 interactions[:,1] = pars
 np.savetxt(f'./temp/interactions_{k_avg}_{beta}.dat', interactions, delimiter=';', fmt=['%d','%.5f'])
 
-
-
-metro_args = (f'./bin/metropolis_data_n{n}.out', f'{N}', f'./temp/interactions_{k_avg}_{beta}.dat', f'./generated_data/data_{k_avg}')
-metro = subprocess.Popen(metro_args)
+fname = f'HG{g_id}_k{k_avg}_mu{mu:.2f}_({n},{nc},{npc})_B{beta}_N{N}'
+metro = subprocess.Popen(f'./metropolis_data.exe {N} ./temp/interactions_{k_avg}_{beta}.dat ./generated_data/{fname}')
 metro.communicate()
 
 # remove temporary interaction file 

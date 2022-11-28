@@ -1,0 +1,3 @@
+- before compiling, specify number of variables n in metropolis_data.cpp
+- compile using metropolis_compiler batch script
+- run main_pipeline.py python script
